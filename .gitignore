@@ -1,0 +1,6 @@
+/target
+.jacq/
+.temper/
+data/mteb/
+*.parquet
+nul
