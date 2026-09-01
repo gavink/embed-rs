@@ -48,13 +48,41 @@ Inference time: 50-70 ms
 
 | Model | Dim | Size | MTEB | Notes |
 |---|---|---|---|---|
-| `all-MiniLM-L6-v2` | 384 | 93MB | ~63% | original jcode default |
+| `all-MiniLM-L6-v2` | 384 | 93MB | ~63% | lightweight option |
 | **`BAAI/bge-small-en-v1.5`** | 384 | 128MB | ~67% | **recommended** |
 | `BAAI/bge-base-zh-v1.5` | 768 | 500MB | ~73% (zh) | bilingual |
 
-## Comparison: Candle vs tract_onnx
+## Benchmark Results
 
-| | jcode (tract) | this project (Candle) |
+### STS-Benchmark (MTEB, 1379 pairs)
+
+| Pooling | Spearman | vs Reference |
+|---------|----------|--------------|
+| `cls`   | 0.8586   | +0.00% (matches MTEB official) |
+
+> **Note**: BGE's official config (`1_Pooling/config.json`) specifies
+> `pooling_mode_cls_token: true`. Mean pooling gave 0.8680 but is not
+> the canonical evaluation protocol.
+
+Run with:
+```bash
+cargo run --release -- --stsb --pooling-mode cls
+```
+
+### Semantic Similarity Benchmark
+
+10/10 passed — all pairs correctly classified as high/medium/low similarity.
+
+Run with:
+```bash
+cargo run --release -- --bench
+```
+
+---
+
+## Comparison: ONNX vs Candle
+
+| | ONNX (tract) | this project (Candle) |
 |---|---|---|
 | Inference engine | `tract_onnx` (C++ backend) | `candle-core` (pure Rust) |
 | Model format | ONNX (~93MB MiniLM) | safetensors (~128MB BGE) |
